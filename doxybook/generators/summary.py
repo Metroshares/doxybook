@@ -17,6 +17,13 @@ def generate_recursive(f: TextIO, node: Node, level: int, diff: str):
             f.write(' ' * level + generate_link(child.kind.value + ' ' + child.name, diff + '/' + child.refid + '.md'))
             generate_recursive(f, child, level + 2, diff)
 
+def generate_recursive_modules(f: TextIO, modules: dict, level: int, diff: str):
+    for key,value in modules.items():
+        f.write(' ' * level + generate_link(value['name'].replace("_"," ").capitalize(), diff + '/' + key + '.md'))
+        # f.write(' ' * level + generate_link(value['name'], diff + '/' + key + '.md'))
+        if 'innergroups' in value:
+            generate_recursive_modules(f, value['innergroups'], level + 2, diff)
+
 def generate_files(f: TextIO, files: dict, level: int, diff: str):
     for key,value in files.items():
         if key == '#':
@@ -69,8 +76,9 @@ def generate_summary(output_path: str, summary_file: str, root: Node, modules: l
             f.write(content[i])
         if modules:
             f.write(generate_link('Smart Contract API', diff + '/' + 'modules.md'))
-            for key,value in modules.items():
-                f.write(' ' * (offset+2) + generate_link(value.replace("_"," ").capitalize(), diff + '/' + key + '.md'))
+            generate_recursive_modules(f, modules, offset + 4, diff)
+            # for key,value in modules.items():
+            #     f.write(' ' * (offset+2) + generate_link(value.replace("_"," ").capitalize(), diff + '/' + key + '.md'))
         for i in range(start, start+1):
             f.write(content[i])
         if pages:
