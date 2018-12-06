@@ -36,7 +36,7 @@ def write_members(index_path: str, output_path: str, node: Node, cache: Cache):
             generate_member(index_path, output_path, member.refid, cache)
             write_members(index_path, output_path, member, cache)
 
-def main():
+def convert(clargs: list = []):
     parser = argparse.ArgumentParser(description='Convert doxygen XML output into GitBook or Vuepress markdown output.')
     parser.add_argument('-t', '--target', 
         type=str, 
@@ -78,7 +78,7 @@ def main():
         default=config.hints
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args(clargs)
 
     if args.target != 'gitbook' and args.target != 'vuepress':
         raise Exception('Unknown target: ' + str(args.target))
@@ -138,3 +138,6 @@ def main():
     # Update summary
     if args.summary:
         generate_summary(args.output, args.summary, root, modules, pages, files)
+
+def main():
+    convert(sys.argv[1:])
